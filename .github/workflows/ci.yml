@@ -1,0 +1,62 @@
+name: CI/CD
+
+on:
+  push:
+    branches: ["**"] # Проверяем все ветки
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint-and-type-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "latest"
+
+      - name: Set up Python from .python-version
+        run: uv python install
+
+      - name: Install dependencies
+        run: |
+          uv sync --dev
+          uv add --dev ruff mypy
+
+      - name: Run ruff linter
+        run: uv run ruff check . --output-format=github
+
+      - name: Run ruff formatter check
+        run: uv run ruff format --check . --diff
+
+      - name: Run mypy type checker
+        run: uv run mypy --strict src/ --show-error-codes
+
+  build-and-publish:
+    needs: lint-and-type-check
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "latest"
+
+      - name: Set up Python from .python-version
+        run: uv python install
+
+      - name: Install dependencies
+        run: uv sync --dev
+
+      - name: Build package
+        run: uv build
+
+      - name: Publish to PyPI
+        env:
+          UV_PUBLISH_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
+        run: uv publish

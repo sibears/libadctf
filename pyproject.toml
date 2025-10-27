@@ -7,11 +7,23 @@ name = "libadctf"
 version = "0.1.1"
 description = "A Python library"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.14"
 dependencies = []
+
+[project.optional-dependencies]
+dev = ["ruff>=0.6.0", "mypy>=1.11.0", "pytest>=8.0.0"]
 
 [project.scripts]
 start_sploit = "libadctf.start_sploit:start"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/libadctf"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "tab"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+
+[tool.mypy]
+strict = true
