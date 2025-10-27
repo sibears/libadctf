@@ -10,9 +10,6 @@ readme = "README.md"
 requires-python = ">=3.14"
 dependencies = []
 
-[project.optional-dependencies]
-dev = ["ruff>=0.6.0", "mypy>=1.11.0", "pytest>=8.0.0"]
-
 [project.scripts]
 start_sploit = "libadctf.start_sploit:start"
 
@@ -27,3 +24,6 @@ line-ending = "auto"
 
 [tool.mypy]
 strict = true
+
+[dependency-groups]
+dev = ["mypy>=1.18.2", "ruff>=0.14.2"]
